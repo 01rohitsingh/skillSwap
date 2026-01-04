@@ -34,9 +34,14 @@ const loginUser = async (req, res) => {
     const user=await User.findOne({email});
     if(!user)
     {
-      return res.status(400).json({message:"Invalid credentails"})
+      return res.status(401).json({message:"Invalid credentails"})
     }
-    res.status(200).json({message:"Login validation passed"})
+    const isMatch= await bcrypt.compare(password,user.password)
+    if(!isMatch)
+    {
+      return res.status(401).json({message:"Invalid credentials"});
+    }
+    res.json({ message: "Login success" })
   }
   catch(err){
     res.status(400).json({message:err.message});
